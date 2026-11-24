@@ -130,7 +130,23 @@ def _load_validators() -> dict[str, Draft202012Validator]:
     }
     
 def available_schema_kinds() -> tuple[str, ...]:
-    return tuple()
-        
-                
-        
+    """Return the kinds of schema documents available for validation."""
+    return tuple(sorted(_load_validators()))
+
+def validate_schema(kind: str, payload: object) -> list[ValidationIssue]:
+    """Validate a JSON document against a schema of the given kind."""
+    validators = _load_validators()
+    if kind not in validators:
+        available = ", ".join(sorted(validators))
+        raise ValueError(f"Schema kind '{kind!r}' not available, must be one of: {available}")
+
+    issues = [
+        ValidationIssue(
+            code=f"schema.{error.validator or 'invalid'}",
+            path=_json_pointer(error.absolute_path),
+            severity="error",
+            message=error.message
+        )
+        for error in validators[kind].iter_errors(payload)
+    ]
+    return sorted(issues, key=lambda issue: (issue.path, issue.code, issue.message))
