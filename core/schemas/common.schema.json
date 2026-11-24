@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:presskg-dataset-ita:schema:common:1.0.0",
+  "title": "PressKG_Dataset_ITA — definizioni comuni",
+  "description": "Definizioni da riusare tramite $ref negli schemi degli artefatti.",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "\\s"
+      },
+      "description": "Identificativo opaco, non vuoto e senza spazi bianchi."
+    },
+    "calendar_date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "Data gregoriana YYYY-MM-DD, senza ora né fuso."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?(Z|[+-][0-9]{2}:[0-9]{2})$",
+      "description": "Timestamp con fuso esplicito; al massimo sei cifre frazionarie."
+    },
+    "temporal_value": {
+      "description": "Data, istante o intervallo con estremi della stessa granularità.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": { "const": "date" },
+            "value": { "$ref": "#/$defs/calendar_date" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": { "const": "instant" },
+            "value": { "$ref": "#/$defs/timestamp" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "granularity", "start", "end"],
+          "properties": {
+            "kind": { "const": "interval" },
+            "granularity": { "const": "day" },
+            "start": { "$ref": "#/$defs/calendar_date" },
+            "end": { "$ref": "#/$defs/calendar_date" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "granularity", "start", "end"],
+          "properties": {
+            "kind": { "const": "interval" },
+            "granularity": { "const": "timestamp" },
+            "start": { "$ref": "#/$defs/timestamp" },
+            "end": { "$ref": "#/$defs/timestamp" }
+          }
+        }
+      ]
+    },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["article_id", "field", "start", "end", "quote"],
+      "properties": {
+        "article_id": { "$ref": "#/$defs/id" },
+        "field": {
+          "enum": ["title", "subtitle", "body"]
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "Offset Unicode a base zero nel campo originale; l'estremo finale è escluso."
+    }
+  }
+}

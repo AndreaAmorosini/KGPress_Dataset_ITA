@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:presskg-dataset-ita:schema:annotations:1.0.0",
+  "title": "PressKG_Dataset_ITA — annotazioni documentali",
+  "description": "Menzioni, claim ed evidenze di un singolo articolo sintetico.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "article_id", "world_id", "mentions", "claims"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "article_id": { "$ref": "#/$defs/id" },
+    "world_id": { "$ref": "#/$defs/id" },
+    "mentions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/mention" }
+    },
+    "claims": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/claim" }
+    },
+    "utterances": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/utterance" }
+    },
+    "viewpoints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/viewpoint" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+    },
+    "id_list": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "span": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/span"
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/span" }
+    },
+    "mention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "span"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "span": { "$ref": "#/$defs/span" },
+        "entity_id": {
+          "$ref": "#/$defs/id",
+          "description": "ID canonico nel mondo; omesso finché la menzione resta irrisolta."
+        }
+      }
+    },
+    "proposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["predicate"],
+      "properties": {
+        "predicate": {
+          "$ref": "#/$defs/id",
+          "description": "Predicato canonico del registro."
+        },
+        "subject_id": { "$ref": "#/$defs/id" },
+        "object_id": { "$ref": "#/$defs/id" },
+        "subject_mention_id": { "$ref": "#/$defs/id" },
+        "object_mention_id": { "$ref": "#/$defs/id" },
+        "qualifiers": {
+          "type": "object",
+          "description": "Qualificatori ammessi dal registro del predicato."
+        }
+      }
+    },
+    "attribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": ["editorial", "attributed", "unknown"]
+        },
+        "entity_id": { "$ref": "#/$defs/id" },
+        "mention_id": { "$ref": "#/$defs/id" }
+      },
+      "if": {
+        "properties": {
+          "kind": { "const": "attributed" }
+        }
+      },
+      "then": {
+        "anyOf": [
+          { "required": ["entity_id"] },
+          { "required": ["mention_id"] }
+        ]
+      },
+      "else": {
+        "properties": {
+          "entity_id": false,
+          "mention_id": false
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "article_id",
+        "modality",
+        "textual_support",
+        "world_status",
+        "origin",
+        "evidence"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "article_id": { "$ref": "#/$defs/id" },
+        "proposition": { "$ref": "#/$defs/proposition" },
+        "modality": {
+          "enum": ["asserted", "negated", "hedged"]
+        },
+        "textual_support": {
+          "enum": ["verified", "rejected", "pending"]
+        },
+        "world_status": {
+          "enum": ["entailed", "contradicted", "unknown"]
+        },
+        "origin": {
+          "enum": ["assigned", "emergent"]
+        },
+        "emergent_status": {
+          "enum": ["compatible", "incompatible", "unverified"]
+        },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "attribution": { "$ref": "#/$defs/attribution" },
+        "valid_time": {
+          "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/temporal_value"
+        },
+        "world_fact_id": {
+          "$ref": "#/$defs/id",
+          "description": "Fatto canonico pertinente al confronto; il riferimento non implica conferma del claim."
+        },
+        "utterance_ids": { "$ref": "#/$defs/id_list" },
+        "diagnostic_tags": { "$ref": "#/$defs/id_list" }
+      },
+      "if": {
+        "properties": {
+          "origin": { "const": "emergent" }
+        }
+      },
+      "then": {
+        "required": ["emergent_status"]
+      },
+      "else": {
+        "properties": {
+          "emergent_status": false
+        }
+      }
+    },
+    "utterance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "evidence"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": {
+          "enum": ["direct", "indirect", "mixed"]
+        },
+        "evidence": { "$ref": "#/$defs/evidence" },
+        "attribution": { "$ref": "#/$defs/attribution" }
+      }
+    },
+    "viewpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "claim_ids"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "claim_ids": {
+          "$ref": "#/$defs/id_list",
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

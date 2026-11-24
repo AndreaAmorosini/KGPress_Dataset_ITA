@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:presskg-dataset-ita:schema:predicate-registry:1.0.0",
+  "title": "PressKG_Dataset_ITA — registro dei predicati",
+  "description": "Contratto strutturale del file config/predicate_registry.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "registry_version",
+    "ontology_version",
+    "predicates",
+    "input_aliases"
+  ],
+  "properties": {
+    "registry_version": { "$ref": "#/$defs/version" },
+    "ontology_version": { "$ref": "#/$defs/version" },
+    "predicates": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/predicate_id" },
+      "additionalProperties": { "$ref": "#/$defs/predicate_definition" }
+    },
+    "input_aliases": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/predicate_id" },
+      "additionalProperties": { "$ref": "#/$defs/input_alias" }
+    }
+  },
+  "$defs": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "predicate_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"
+    },
+    "type_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$"
+    },
+    "mapping_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(_[a-z0-9]+)*$"
+    },
+    "endpoint_types": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/type_id" }
+    },
+    "participant_role_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "value_source", "applies_to"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "value_source": { "const": "participant_roles" },
+        "applies_to": { "const": "subject" }
+      }
+    },
+    "predicate_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "family",
+        "domain",
+        "range",
+        "temporal_policy",
+        "qualifiers",
+        "cardinality",
+        "incompatible_with",
+        "constraints",
+        "inverse",
+        "mapping_refs"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "family": {
+          "enum": [
+            "organizational",
+            "operational",
+            "institutional",
+            "financial",
+            "participation",
+            "geographic",
+            "temporal"
+          ]
+        },
+        "domain": { "$ref": "#/$defs/endpoint_types" },
+        "range": { "$ref": "#/$defs/endpoint_types" },
+        "temporal_policy": {
+          "enum": ["optional", "required", "forbidden"]
+        },
+        "qualifiers": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "participant_role": {
+              "$ref": "#/$defs/participant_role_definition"
+            }
+          }
+        },
+        "cardinality": {
+          "type": "null",
+          "description": "La v1 non impone vincoli di cardinalità."
+        },
+        "incompatible_with": {
+          "type": "array",
+          "maxItems": 0,
+          "description": "Riservato: la v1 non dichiara incompatibilità tra predicati diversi."
+        },
+        "constraints": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["no_self_loop", "acyclic", "strict_event_order"]
+          }
+        },
+        "inverse": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/predicate_id" }
+          ]
+        },
+        "mapping_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/mapping_id" }
+        }
+      }
+    },
+    "input_alias": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonical_predicate", "swap_endpoints"],
+      "properties": {
+        "canonical_predicate": { "$ref": "#/$defs/predicate_id" },
+        "swap_endpoints": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PressKG_Dataset_ITA"
+version = "0.1.0"
+description = "Framework per un benchmark sintetico di articoli italiani e knowledge graph"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "jsonschema>=4.22,<5",
+    "referencing>=0.35,<1",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["core", "core.*", "gen", "gen.*", "eval", "eval.*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+core = ["schemas/*.schema.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-config --strict-markers"
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.dependencies]
+python = "3.11.*"
+jsonschema = ">=4.22,<5"
+referencing = ">=0.35,<1"
+pytest = ">=8,<10"
+python-build = ">=1,<2"
+setuptools = ">=69"
+wheel = "*"
+
+[tool.pixi.pypi-dependencies]
+presskg-dataset-ita = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+test = "python -m pytest -q"
+build = "python -m build --no-isolation"

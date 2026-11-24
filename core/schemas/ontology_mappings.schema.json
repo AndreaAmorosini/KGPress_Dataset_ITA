@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:presskg-dataset-ita:schema:ontology-mappings:1.0.0",
+  "title": "PressKG_Dataset_ITA — mapping ontologici",
+  "description": "Contratto strutturale del file config/ontology_mappings.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mapping_version",
+    "ontology_version",
+    "predicate_registry_version",
+    "vocabularies",
+    "mappings",
+    "unmapped",
+    "reference_terms",
+    "topic_references"
+  ],
+  "properties": {
+    "mapping_version": { "$ref": "#/$defs/release" },
+    "ontology_version": { "$ref": "#/$defs/release" },
+    "predicate_registry_version": { "$ref": "#/$defs/release" },
+    "vocabularies": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/key" },
+      "additionalProperties": { "$ref": "#/$defs/vocabulary" }
+    },
+    "mappings": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/key" },
+      "additionalProperties": { "$ref": "#/$defs/mapping" }
+    },
+    "unmapped": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/local_kind" },
+      "additionalProperties": {
+        "type": "array",
+        "uniqueItems": true,
+        "items": { "$ref": "#/$defs/local_id" }
+      }
+    },
+    "reference_terms": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/key" },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": { "$ref": "#/$defs/web_iri" }
+      }
+    },
+    "topic_references": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/key" },
+      "additionalProperties": { "$ref": "#/$defs/iptc_topic" }
+    }
+  },
+  "$defs": {
+    "release": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(_[a-z0-9]+)*$"
+    },
+    "non_blank_text": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "local_kind": {
+      "enum": [
+        "entity_type",
+        "event_type",
+        "document_type",
+        "document_link",
+        "predicate"
+      ]
+    },
+    "local_id": {
+      "type": "string",
+      "minLength": 1,
+      "not": { "pattern": "\\s" }
+    },
+    "web_iri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://[^/?#\\s]+[^\\s]*$",
+      "not": { "pattern": "\\s" }
+    },
+    "vocabulary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "source_url"],
+      "properties": {
+        "version": { "$ref": "#/$defs/non_blank_text" },
+        "source_url": { "$ref": "#/$defs/web_iri" }
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["local_kind", "local_id", "vocabulary", "match", "target_iri", "rationale"],
+      "properties": {
+        "local_kind": { "$ref": "#/$defs/local_kind" },
+        "local_id": { "$ref": "#/$defs/local_id" },
+        "vocabulary": { "$ref": "#/$defs/key" },
+        "match": { "enum": ["exact", "close", "broad", "narrow"] },
+        "target_iri": { "$ref": "#/$defs/web_iri" },
+        "rationale": { "$ref": "#/$defs/non_blank_text" }
+      }
+    },
+    "iptc_topic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["vocabulary", "target_iri", "label_en"],
+      "properties": {
+        "vocabulary": { "const": "iptc_media_topics" },
+        "target_iri": {
+          "$ref": "#/$defs/web_iri",
+          "pattern": "^http://cv\\.iptc\\.org/newscodes/mediatopic/[0-9]{8}$"
+        },
+        "label_en": { "$ref": "#/$defs/non_blank_text" },
+        "note": { "$ref": "#/$defs/non_blank_text" }
+      }
+    }
+  }
+}

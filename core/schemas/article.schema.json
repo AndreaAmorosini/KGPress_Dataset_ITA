@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:presskg-dataset-ita:schema:article:1.0.0",
+  "title": "PressKG_Dataset_ITA — articolo sintetico",
+  "description": "Testo originale e metadati di un singolo articolo, senza annotazioni o ground truth.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "article_id",
+    "language",
+    "title",
+    "body",
+    "published_on",
+    "scenario_id",
+    "thematic_cluster",
+    "style",
+    "generation_run_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "article_id": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+    },
+    "language": {
+      "const": "it",
+      "description": "Lingua dichiarata del documento per il rilascio v1."
+    },
+    "title": {
+      "$ref": "#/$defs/non_blank_text"
+    },
+    "subtitle": {
+      "$ref": "#/$defs/non_blank_text"
+    },
+    "body": {
+      "$ref": "#/$defs/non_blank_text",
+      "description": "Testo originale dell'articolo, compresi gli a capo usati per gli offset."
+    },
+    "published_on": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/calendar_date",
+      "description": "Data di pubblicazione nel mondo sintetico, non data di generazione."
+    },
+    "scenario_id": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+    },
+    "thematic_cluster": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id",
+      "description": "Identificativo del cluster tematico locale."
+    },
+    "style": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id",
+      "description": "Identificativo dello stile definito nel profilo di generazione."
+    },
+    "topic_iris": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "description": "Tag tematici esterni applicati al documento; non equivalenze del cluster locale."
+    },
+    "generation_run_id": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id",
+      "description": "Riferimento al record interno della generazione, separato dal documento."
+    }
+  },
+  "$defs": {
+    "non_blank_text": {
+      "type": "string",
+      "pattern": "\\S"
+    }
+  }
+}

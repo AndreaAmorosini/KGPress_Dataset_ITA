@@ -1,0 +1,193 @@
+{
+  "mapping_version": "1.0.0",
+  "ontology_version": "1.0.0",
+  "predicate_registry_version": "1.0.0",
+  "vocabularies": {
+    "schema_org": {
+      "version": "30.1",
+      "source_url": "https://schema.org/version/30.1/"
+    },
+    "nco": {
+      "version": "2.2.0",
+      "source_url": "https://media-analytics.github.io/nco/v2.2/index-en.html"
+    },
+    "sem": {
+      "version": "2009/11",
+      "source_url": "https://semanticweb.cs.vu.nl/2009/11/sem/"
+    },
+    "prov_o": {
+      "version": "W3C Recommendation 2013-04-30",
+      "source_url": "https://www.w3.org/TR/2013/REC-prov-o-20130430/"
+    },
+    "owl_time": {
+      "version": "W3C Candidate Recommendation Draft 2022-11-15",
+      "source_url": "https://www.w3.org/TR/2022/CRD-owl-time-20221115/"
+    },
+    "iptc_media_topics": {
+      "version": "snapshot 2026-10-16",
+      "source_url": "https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html"
+    }
+  },
+  "mappings": {
+    "person_schema_org": {
+      "local_kind": "entity_type",
+      "local_id": "Person",
+      "vocabulary": "schema_org",
+      "match": "exact",
+      "target_iri": "https://schema.org/Person",
+      "rationale": "Entrambi designano una persona individuale; Schema.org include esplicitamente anche le persone di finzione."
+    },
+    "organization_schema_org": {
+      "local_kind": "entity_type",
+      "local_id": "Organization",
+      "vocabulary": "schema_org",
+      "match": "exact",
+      "target_iri": "https://schema.org/Organization",
+      "rationale": "Entrambi designano soggetti collettivi organizzati, non i luoghi in cui operano."
+    },
+    "location_schema_org": {
+      "local_kind": "entity_type",
+      "local_id": "Location",
+      "vocabulary": "schema_org",
+      "match": "close",
+      "target_iri": "https://schema.org/Place",
+      "rationale": "Il concetto di luogo fisico è condiviso, ma il profilo locale non adotta tutte le distinzioni di Schema.org."
+    },
+    "event_schema_org": {
+      "local_kind": "entity_type",
+      "local_id": "Event",
+      "vocabulary": "schema_org",
+      "match": "close",
+      "target_iri": "https://schema.org/Event",
+      "rationale": "Entrambi descrivono occorrenze individuali; il profilo locale comprende anche decisioni e passaggi di progetto con luogo non necessariamente noto."
+    },
+    "event_nco": {
+      "local_kind": "entity_type",
+      "local_id": "Event",
+      "vocabulary": "nco",
+      "match": "close",
+      "target_iri": "http://data.open.ac.uk/ontology/newsclassification/v2#Event",
+      "rationale": "Tempo, luogo e attori sono rilevanti in entrambi i modelli, ma il profilo locale non importa le strutture NCO per componenti, ruoli o sottotipi."
+    },
+    "event_sem": {
+      "local_kind": "entity_type",
+      "local_id": "Event",
+      "vocabulary": "sem",
+      "match": "broad",
+      "target_iri": "http://semanticweb.cs.vu.nl/2009/11/sem/Event",
+      "rationale": "SEM comprende occorrenze di qualunque dominio, oltre al sottoinsieme modellato dal benchmark."
+    },
+    "article_schema_org": {
+      "local_kind": "document_type",
+      "local_id": "Article",
+      "vocabulary": "schema_org",
+      "match": "close",
+      "target_iri": "https://schema.org/NewsArticle",
+      "rationale": "L'articolo sintetico assume la forma di una notizia; il record locale contiene anche metadati sperimentali."
+    },
+    "article_nco": {
+      "local_kind": "document_type",
+      "local_id": "Article",
+      "vocabulary": "nco",
+      "match": "close",
+      "target_iri": "http://data.open.ac.uk/ontology/newsclassification/v2#NewsItem",
+      "rationale": "Il record locale rappresenta il documento sorgente dei claim, senza adottare l'intero modello NCO della notizia."
+    },
+    "article_claim_nco": {
+      "local_kind": "document_type",
+      "local_id": "ArticleClaim",
+      "vocabulary": "nco",
+      "match": "close",
+      "target_iri": "http://data.open.ac.uk/ontology/newsclassification/v2#Claim",
+      "rationale": "NCO distingue una proposizione reificata dalla sua realizzazione testuale. Il profilo locale aggiunge stati separati per supporto testuale e riscontro nel mondo."
+    },
+    "claim_article_nco": {
+      "local_kind": "document_link",
+      "local_id": "ArticleClaim.article_id",
+      "vocabulary": "nco",
+      "match": "close",
+      "target_iri": "http://data.open.ac.uk/ontology/newsclassification/v2#claimInNewsItem",
+      "rationale": "Entrambi collegano il claim al documento che lo riporta. In NCO la proprietà inversa è hasClaim."
+    },
+    "member_of_schema_org": {
+      "local_kind": "predicate",
+      "local_id": "MEMBER_OF",
+      "vocabulary": "schema_org",
+      "match": "broad",
+      "target_iri": "https://schema.org/memberOf",
+      "rationale": "Il target esterno ammette anche ProgramMembership; il predicato locale richiede un'organizzazione come oggetto."
+    },
+    "takes_place_in_schema_org": {
+      "local_kind": "predicate",
+      "local_id": "TAKES_PLACE_IN",
+      "vocabulary": "schema_org",
+      "match": "broad",
+      "target_iri": "https://schema.org/location",
+      "rationale": "La proprietà esterna si applica anche a soggetti diversi dagli eventi e a valori non limitati ai luoghi canonici del benchmark."
+    }
+  },
+  "unmapped": {
+    "entity_type": ["Project", "Work"],
+    "event_type": ["Decision", "Announcement", "ProjectMilestone", "PublicEvent"],
+    "predicate": [
+      "WORKS_FOR",
+      "DIRECTS",
+      "MANAGES",
+      "REALIZES",
+      "APPROVES",
+      "FUNDS",
+      "PARTICIPATES_IN",
+      "ORGANIZES",
+      "PRECEDES"
+    ]
+  },
+  "reference_terms": {
+    "nco": [
+      "http://data.open.ac.uk/ontology/newsclassification/v2#Statement",
+      "http://data.open.ac.uk/ontology/newsclassification/v2#Utterance",
+      "http://data.open.ac.uk/ontology/newsclassification/v2#hasUtterance",
+      "http://data.open.ac.uk/ontology/newsclassification/v2#NewsSource",
+      "http://data.open.ac.uk/ontology/newsclassification/v2#Viewpoint"
+    ],
+    "sem": [
+      "http://semanticweb.cs.vu.nl/2009/11/sem/hasActor",
+      "http://semanticweb.cs.vu.nl/2009/11/sem/hasPlace",
+      "http://semanticweb.cs.vu.nl/2009/11/sem/Role"
+    ],
+    "prov_o": [
+      "http://www.w3.org/ns/prov#Entity",
+      "http://www.w3.org/ns/prov#Activity",
+      "http://www.w3.org/ns/prov#wasDerivedFrom",
+      "http://www.w3.org/ns/prov#wasGeneratedBy"
+    ],
+    "owl_time": [
+      "http://www.w3.org/2006/time#Instant",
+      "http://www.w3.org/2006/time#Interval",
+      "http://www.w3.org/2006/time#before",
+      "http://www.w3.org/2006/time#after"
+    ]
+  },
+  "topic_references": {
+    "institutional": {
+      "vocabulary": "iptc_media_topics",
+      "target_iri": "http://cv.iptc.org/newscodes/mediatopic/11000000",
+      "label_en": "politics and government"
+    },
+    "economic": {
+      "vocabulary": "iptc_media_topics",
+      "target_iri": "http://cv.iptc.org/newscodes/mediatopic/04000000",
+      "label_en": "economy, business and finance"
+    },
+    "cultural": {
+      "vocabulary": "iptc_media_topics",
+      "target_iri": "http://cv.iptc.org/newscodes/mediatopic/01000000",
+      "label_en": "arts, culture, entertainment and media"
+    },
+    "territory_environment": {
+      "vocabulary": "iptc_media_topics",
+      "target_iri": "http://cv.iptc.org/newscodes/mediatopic/06000000",
+      "label_en": "environment",
+      "note": "Usare il topic solo per scenari effettivamente ambientali. Il cluster locale comprende anche notizie territoriali non ambientali."
+    }
+  }
+}

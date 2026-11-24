@@ -1,0 +1,161 @@
+{
+  "registry_version": "1.0.0",
+  "ontology_version": "1.0.0",
+  "predicates": {
+    "WORKS_FOR": {
+      "description": "La persona svolge un'attività lavorativa per l'organizzazione. Non implica un rapporto di appartenenza associativa.",
+      "family": "organizational",
+      "domain": ["Person"],
+      "range": ["Organization"],
+      "temporal_policy": "optional",
+      "qualifiers": {},
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": [],
+      "inverse": null,
+      "mapping_refs": []
+    },
+    "DIRECTS": {
+      "description": "La persona esercita funzioni di direzione nell'organizzazione. La relazione non presuppone un dirigente unico.",
+      "family": "organizational",
+      "domain": ["Person"],
+      "range": ["Organization"],
+      "temporal_policy": "optional",
+      "qualifiers": {},
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": [],
+      "inverse": null,
+      "mapping_refs": []
+    },
+    "MEMBER_OF": {
+      "description": "La persona o l'organizzazione è membro dell'organizzazione oggetto. Un rapporto lavorativo non basta a stabilire l'appartenenza.",
+      "family": "organizational",
+      "domain": ["Person", "Organization"],
+      "range": ["Organization"],
+      "temporal_policy": "optional",
+      "qualifiers": {},
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": ["no_self_loop"],
+      "inverse": null,
+      "mapping_refs": ["member_of_schema_org"]
+    },
+    "MANAGES": {
+      "description": "L'organizzazione è responsabile della gestione del progetto, senza essere necessariamente il soggetto che lo realizza.",
+      "family": "operational",
+      "domain": ["Organization"],
+      "range": ["Project"],
+      "temporal_policy": "optional",
+      "qualifiers": {},
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": [],
+      "inverse": null,
+      "mapping_refs": []
+    },
+    "REALIZES": {
+      "description": "L'organizzazione attua il progetto o produce materialmente l'opera. La sola gestione o il solo finanziamento non bastano.",
+      "family": "operational",
+      "domain": ["Organization"],
+      "range": ["Project", "Work"],
+      "temporal_policy": "optional",
+      "qualifiers": {},
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": [],
+      "inverse": null,
+      "mapping_refs": []
+    },
+    "APPROVES": {
+      "description": "L'organizzazione adotta formalmente una decisione favorevole sul progetto. Un annuncio o un sostegno informale non costituiscono un'approvazione.",
+      "family": "institutional",
+      "domain": ["Organization"],
+      "range": ["Project"],
+      "temporal_policy": "optional",
+      "qualifiers": {},
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": [],
+      "inverse": null,
+      "mapping_refs": []
+    },
+    "FUNDS": {
+      "description": "L'organizzazione destina risorse finanziarie al progetto, all'opera o all'evento. Una proposta o un'intenzione non equivalgono a uno stanziamento.",
+      "family": "financial",
+      "domain": ["Organization"],
+      "range": ["Project", "Work", "Event"],
+      "temporal_policy": "optional",
+      "qualifiers": {},
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": [],
+      "inverse": null,
+      "mapping_refs": []
+    },
+    "PARTICIPATES_IN": {
+      "description": "La persona o l'organizzazione prende parte all'evento. Il ruolo, se noto, specifica in quale veste.",
+      "family": "participation",
+      "domain": ["Person", "Organization"],
+      "range": ["Event"],
+      "temporal_policy": "optional",
+      "qualifiers": {
+        "participant_role": {
+          "required": false,
+          "value_source": "participant_roles",
+          "applies_to": "subject"
+        }
+      },
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": [],
+      "inverse": null,
+      "mapping_refs": []
+    },
+    "ORGANIZES": {
+      "description": "La persona o l'organizzazione cura l'organizzazione dell'evento, senza che questo implichi la sua presenza all'evento.",
+      "family": "participation",
+      "domain": ["Person", "Organization"],
+      "range": ["Event"],
+      "temporal_policy": "optional",
+      "qualifiers": {},
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": [],
+      "inverse": null,
+      "mapping_refs": []
+    },
+    "TAKES_PLACE_IN": {
+      "description": "L'evento si svolge nel luogo indicato. Un luogo menzionato nel resoconto non è necessariamente la sede dell'evento.",
+      "family": "geographic",
+      "domain": ["Event"],
+      "range": ["Location"],
+      "temporal_policy": "optional",
+      "qualifiers": {},
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": [],
+      "inverse": null,
+      "mapping_refs": ["takes_place_in_schema_org"]
+    },
+    "PRECEDES": {
+      "description": "L'evento soggetto termina strettamente prima dell'inizio dell'evento oggetto.",
+      "family": "temporal",
+      "domain": ["Event"],
+      "range": ["Event"],
+      "temporal_policy": "forbidden",
+      "qualifiers": {},
+      "cardinality": null,
+      "incompatible_with": [],
+      "constraints": ["no_self_loop", "acyclic", "strict_event_order"],
+      "inverse": "FOLLOWS",
+      "mapping_refs": []
+    }
+  },
+  "input_aliases": {
+    "FOLLOWS": {
+      "canonical_predicate": "PRECEDES",
+      "swap_endpoints": true
+    }
+  }
+}

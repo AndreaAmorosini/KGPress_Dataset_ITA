@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:presskg-dataset-ita:schema:ontology:1.0.0",
+  "title": "PressKG_Dataset_ITA — profilo ontologico",
+  "description": "Contratto strutturale del file config/ontology.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ontology_version",
+    "entity_types",
+    "event_types",
+    "participant_roles",
+    "diagnostic_tags"
+  ],
+  "properties": {
+    "ontology_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "entity_types": {
+      "type": "object",
+      "required": ["Person", "Organization", "Location", "Event", "Project", "Work"],
+      "propertyNames": { "$ref": "#/$defs/type_id" },
+      "additionalProperties": { "$ref": "#/$defs/type_definition" }
+    },
+    "event_types": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/type_id" },
+      "additionalProperties": { "$ref": "#/$defs/type_definition" }
+    },
+    "participant_roles": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/tag_id" },
+      "additionalProperties": { "$ref": "#/$defs/role_definition" }
+    },
+    "diagnostic_tags": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/tag_id" },
+      "additionalProperties": { "$ref": "#/$defs/description" }
+    }
+  },
+  "$defs": {
+    "type_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$"
+    },
+    "tag_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(_[a-z0-9]+)*$"
+    },
+    "description": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "type_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": { "$ref": "#/$defs/description" }
+      }
+    },
+    "role_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "allowed_entity_types"],
+      "properties": {
+        "description": { "$ref": "#/$defs/description" },
+        "allowed_entity_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/type_id" }
+        }
+      }
+    }
+  }
+}

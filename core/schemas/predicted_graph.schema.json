@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:presskg-dataset-ita:schema:predicted-graph:1.0.0",
+  "title": "PressKG_Dataset_ITA — grafo predetto",
+  "description": "Output di un sistema esterno, con ID locali e annotazioni facoltative.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "scope", "nodes", "edges"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "scope": { "$ref": "#/$defs/scope" },
+    "article_ids": {
+      "$ref": "#/$defs/id_list",
+      "description": "Documenti dichiarati come input del sistema, quando noti."
+    },
+    "nodes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "edges": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/edge" }
+    },
+    "mentions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/mention" }
+    },
+    "claims": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/claim" }
+    },
+    "utterances": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/utterance" }
+    },
+    "viewpoints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/viewpoint" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+    },
+    "id_list": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "label": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "temporal_value": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/temporal_value"
+    },
+    "span": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/span"
+    },
+    "span_list": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/span" }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": { "enum": ["article", "scenario", "corpus"] },
+        "id": { "$ref": "#/$defs/id" }
+      }
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "$ref": "#/$defs/label" },
+        "aliases": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/label" }
+        },
+        "type": { "$ref": "#/$defs/label" },
+        "event_type": { "$ref": "#/$defs/label" },
+        "occurrence_time": { "$ref": "#/$defs/temporal_value" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "article_ids": { "$ref": "#/$defs/id_list" },
+        "evidence": { "$ref": "#/$defs/span_list" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "subject_id", "predicate", "object_id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "subject_id": { "$ref": "#/$defs/id" },
+        "predicate": { "$ref": "#/$defs/label" },
+        "object_id": { "$ref": "#/$defs/id" },
+        "valid_time": { "$ref": "#/$defs/temporal_value" },
+        "qualifiers": { "type": "object" },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "mention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "node_id", "span"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "node_id": {
+          "$ref": "#/$defs/id",
+          "description": "Nodo locale a cui il sistema assegna la menzione."
+        },
+        "span": { "$ref": "#/$defs/span" }
+      }
+    },
+    "attribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "enum": ["editorial", "attributed", "unknown"] },
+        "node_id": { "$ref": "#/$defs/id" },
+        "mention_id": { "$ref": "#/$defs/id" }
+      },
+      "if": {
+        "properties": { "kind": { "const": "attributed" } }
+      },
+      "then": {
+        "anyOf": [
+          { "required": ["node_id"] },
+          { "required": ["mention_id"] }
+        ]
+      },
+      "else": {
+        "properties": {
+          "node_id": false,
+          "mention_id": false
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "article_id", "predicate"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "article_id": { "$ref": "#/$defs/id" },
+        "subject_id": { "$ref": "#/$defs/id" },
+        "predicate": { "$ref": "#/$defs/label" },
+        "object_id": { "$ref": "#/$defs/id" },
+        "subject_mention_id": { "$ref": "#/$defs/id" },
+        "object_mention_id": { "$ref": "#/$defs/id" },
+        "modality": { "enum": ["asserted", "negated", "hedged"] },
+        "attribution": { "$ref": "#/$defs/attribution" },
+        "valid_time": { "$ref": "#/$defs/temporal_value" },
+        "qualifiers": { "type": "object" },
+        "evidence": { "$ref": "#/$defs/span_list" },
+        "utterance_ids": { "$ref": "#/$defs/id_list" }
+      }
+    },
+    "utterance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "article_id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "article_id": { "$ref": "#/$defs/id" },
+        "kind": { "enum": ["direct", "indirect", "mixed"] },
+        "attribution": { "$ref": "#/$defs/attribution" },
+        "evidence": { "$ref": "#/$defs/span_list" }
+      }
+    },
+    "viewpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "article_id", "claim_ids"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "article_id": { "$ref": "#/$defs/id" },
+        "claim_ids": {
+          "$ref": "#/$defs/id_list",
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

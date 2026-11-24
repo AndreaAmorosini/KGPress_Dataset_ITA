@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:presskg-dataset-ita:schema:world:1.0.0",
+  "title": "PressKG_Dataset_ITA — mondo sintetico",
+  "description": "Entità canoniche e fatti del mondo, indipendenti dai documenti.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "world_id",
+    "ontology_version",
+    "predicate_registry_version",
+    "seed",
+    "entities",
+    "facts"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "world_id": {
+      "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+    },
+    "ontology_version": { "$ref": "#/$defs/profile_version" },
+    "predicate_registry_version": { "$ref": "#/$defs/profile_version" },
+    "seed": { "type": "integer", "minimum": 0 },
+    "entities": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/entity" }
+    },
+    "facts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/world_fact" }
+    }
+  },
+  "$defs": {
+    "profile_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "label": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "name"],
+      "properties": {
+        "id": {
+          "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+        },
+        "type": {
+          "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+        },
+        "name": { "$ref": "#/$defs/label" },
+        "aliases": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/label" }
+        },
+        "event_type": {
+          "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+        },
+        "occurrence_time": {
+          "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/temporal_value"
+        },
+        "attributes": {
+          "type": "object",
+          "description": "Attributi del mondo non proiettati automaticamente nel gold."
+        },
+        "is_distractor": {
+          "type": "boolean",
+          "description": "Indica un'entità introdotta come distrattore dal piano sperimentale."
+        }
+      },
+      "if": {
+        "required": ["type"],
+        "properties": {
+          "type": { "const": "Event" }
+        }
+      },
+      "then": {
+        "required": ["event_type"]
+      },
+      "else": {
+        "properties": {
+          "event_type": false,
+          "occurrence_time": false
+        }
+      }
+    },
+    "world_fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "subject_id", "predicate", "object_id"],
+      "properties": {
+        "id": {
+          "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+        },
+        "subject_id": {
+          "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+        },
+        "predicate": {
+          "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+        },
+        "object_id": {
+          "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/id"
+        },
+        "valid_time": {
+          "$ref": "urn:presskg-dataset-ita:schema:common:1.0.0#/$defs/temporal_value"
+        },
+        "qualifiers": {
+          "type": "object",
+          "description": "Nomi e valori ammessi sono verificati nel registro del predicato."
+        }
+      }
+    }
+  }
+}
