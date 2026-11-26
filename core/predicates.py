@@ -154,4 +154,58 @@ def validate_predicate_registry(payload: object, ontology: OntologyProfile) -> l
 
 
 def load_predicate_registry(path: str | Path, ontology: OntologyProfile) -> PredicateRegistry:
-    return
+    
+    source = Path(path)
+    payload: object  = json.loads(source.read_text(encoding="utf-8"))
+    
+    issues = validate_predicate_registry(payload, ontology)
+    if issues:
+        raise PredicateRegistryValidationError(source, issues)
+    
+    profile = cast(_RegistryPayload, payload)
+    definitions: dict[str, PredicateDefinition] = {}
+    
+    for predicate_id, raw in profile["predicates"].items():
+        role = raw["qualifiers"].get("participant_role")
+        definitions[predicate_id] = PredicateDefinition(
+            description=raw["description"],
+            family=raw["family"],
+            domain=frozenset(raw["domain"]),
+            range=frozenset(raw["range"]),
+            temporal_policy=raw["temporal_policy"],
+            participant_role_required=role["required"] if role is not None else None,
+            constraints=frozenset(raw["constraints"]),
+            inverse=raw["inverse"],
+            mapping_refs=tuple(raw["mapping_refs"])
+        )
+    
+    return PredicateRegistry(
+        registry_version=profile["registry_version"],
+        ontology_version=profile["ontology_version"],
+        predicates=MappingProxyType(definitions),
+        input_aliases=MappingProxyType(
+            {
+                alias_id: InputAlias(
+                    canonical_predicate=raw["canonical_predicate"],
+                    swap_endpoints=raw["swap_endpoints"]
+                )
+                for alias_id, raw in profile["input_aliases"].items()
+            }
+        ),
+    )
+    
+def normalize_triple(
+    registry: PredicateRegistry,
+    subject_id: str,
+    predicate: str,
+    object_id: str,
+) -> tuple[str, str, str]:
+    """Normalize a declared alias; keep unknwon predicates as-is"""
+    alias = registry.input_aliases.get(predicate)
+    if alias is None:
+        return subject_id, predicate, object_id
+    
+    if alias.swap_endpoints:
+        return object_id, alias.canonical_predicate, subject_id
+    
+    return subject_id, predicate, object_id
